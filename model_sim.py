@@ -34,9 +34,10 @@ from scipy.stats import genextreme
 import os, ctypes
 
 # g++ -std=c++11 -shared -fPIC -o p_integrand.so p_integrand.cpp
-lib = ctypes.CDLL(os.path.abspath('./nonstat_model_noXs/p_integrand.so'))
+lib = ctypes.CDLL(os.path.abspath('./nonstat_model_noXs_global/p_integrand.so'))
 i_and_o_type = np.ctypeslib.ndpointer(ndim=1, dtype=np.float64)
 grid_type  = np.ctypeslib.ndpointer(ndim=1, dtype=np.float64)
+bool_type  = np.ctypeslib.ndpointer(ndim=1, dtype='bool')
 
 lib.pRW_me_interp_C.restype = ctypes.c_int
 lib.pRW_me_interp_C.argtypes = (i_and_o_type, grid_type, grid_type,
@@ -48,10 +49,23 @@ lib.RW_marginal_C.argtypes = (i_and_o_type,
                       ctypes.c_double, ctypes.c_double, ctypes.c_int,
                       i_and_o_type)
 
+lib.RW_me_2_unifs.restype = ctypes.c_int
+lib.RW_me_2_unifs.argtypes = (i_and_o_type, grid_type, grid_type, ctypes.c_double, i_and_o_type, ctypes.c_double,
+                          ctypes.c_int, ctypes.c_int, ctypes.c_int, i_and_o_type)
+
+
 lib.find_xrange_pRW_me_C.restype = ctypes.c_int
 lib.find_xrange_pRW_me_C.argtypes = (ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,
                                      grid_type, grid_type, ctypes.c_double, ctypes.c_double, ctypes.c_double, 
                                      ctypes.c_int, i_and_o_type)
+
+lib.pchip.restype = ctypes.c_int
+lib.pchip.argtypes = (grid_type, grid_type, grid_type, grid_type, ctypes.c_int, ctypes.c_int)
+
+lib.qRW_me_interp.restype = ctypes.c_int
+lib.qRW_me_interp.argtypes = (i_and_o_type, grid_type, grid_type, ctypes.c_double, ctypes.c_double, ctypes.c_double,
+                              ctypes.c_int, ctypes.c_int, i_and_o_type, 
+                              grid_type, grid_type, ctypes.c_int, ctypes.c_double, ctypes.c_double)
 
 lib.RW_density_C.restype = ctypes.c_int
 lib.RW_density_C.argtypes = (i_and_o_type, 
@@ -62,6 +76,57 @@ lib.dRW_me_interp_C.restype = ctypes.c_int
 lib.dRW_me_interp_C.argtypes = (i_and_o_type, grid_type, grid_type,
                       ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_int,
                       i_and_o_type)
+
+lib.density_interp_grid.restype = ctypes.c_int
+lib.density_interp_grid.argtypes = (grid_type, i_and_o_type,
+                      ctypes.c_double, ctypes.c_int, ctypes.c_int,
+                      i_and_o_type, i_and_o_type)
+
+lib.dgev_C.restype = ctypes.c_double
+lib.dgev_C.argtypes = (ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool)
+
+lib.dnorm_C.restype = ctypes.c_double
+lib.dnorm_C.argtypes = (ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_bool)
+
+lib.marg_transform_data_mixture_me_likelihood_C.restype = ctypes.c_double
+lib.marg_transform_data_mixture_me_likelihood_C.argtypes = (i_and_o_type, i_and_o_type, i_and_o_type,
+                                    bool_type, bool_type, i_and_o_type, i_and_o_type, i_and_o_type,
+                                    ctypes.c_double, i_and_o_type, ctypes.c_double,
+                                    grid_type, grid_type, ctypes.c_int, ctypes.c_int)
+
+lib.marg_transform_data_mixture_me_likelihood_F.restype = ctypes.c_double
+lib.marg_transform_data_mixture_me_likelihood_F.argtypes = (i_and_o_type, i_and_o_type, i_and_o_type,
+                                    bool_type, bool_type, i_and_o_type, i_and_o_type, i_and_o_type,
+                                    ctypes.c_double, ctypes.c_double, ctypes.c_double,
+                                    grid_type, grid_type, ctypes.c_int, ctypes.c_int)
+
+lib.marg_transform_data_mixture_me_likelihood_global.restype = ctypes.c_double
+lib.marg_transform_data_mixture_me_likelihood_global.argtypes = (i_and_o_type, i_and_o_type, i_and_o_type,
+                                    bool_type, bool_type, i_and_o_type, i_and_o_type, i_and_o_type,
+                                    ctypes.c_double, i_and_o_type, ctypes.c_double,
+                                    grid_type, grid_type, ctypes.c_int, ctypes.c_int, ctypes.c_int)
+
+lib.Thresh_X_try.restype = ctypes.c_int
+lib.Thresh_X_try.argtypes = (i_and_o_type, grid_type, grid_type, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double,
+                          ctypes.c_double, ctypes.c_double,
+                          ctypes.c_int, ctypes.c_int, i_and_o_type, i_and_o_type)
+
+lib.X_update.restype = ctypes.c_int
+lib.X_update.argtypes = (i_and_o_type, grid_type, grid_type, i_and_o_type, ctypes.c_double, ctypes.c_double,
+                          ctypes.c_double, ctypes.c_double,
+                          ctypes.c_int, ctypes.c_int, ctypes.c_int, i_and_o_type)
+
+lib.unifs_2_RW_me.restype = ctypes.c_int
+lib.unifs_2_RW_me.argtypes = (i_and_o_type, grid_type, grid_type, ctypes.c_double, i_and_o_type, ctypes.c_double,
+                          ctypes.c_double, ctypes.c_double,
+                          ctypes.c_int, ctypes.c_int, ctypes.c_int, i_and_o_type)
+
+
+lib.print_Vec.restype = ctypes.c_double
+lib.print_Vec.argtypes = (i_and_o_type, ctypes.c_int, ctypes.c_int)
+
+
+
 
 ## -------------------------------------------------------------------------- ##
 ## -------------------------------------------------------------------------- ##
@@ -565,7 +630,7 @@ def qRW_me_optim(p, xp, surv_p, tau_sqd, phi, gamma):
 
 
 # import matplotlib.pyplot as plt
-# phi=0.7; gamma=1.2; tau_sqd = 10
+# phi=0.7; gamma=1.2; tau_sqd = 20
 # grid = survival_interp_grid(phi, gamma)
 # xp = grid[0]; surv_p = grid[1]
 # P_vals = np.linspace(0.001,0.99,num=300)
@@ -583,10 +648,19 @@ def qRW_me_optim(p, xp, surv_p, tau_sqd, phi, gamma):
 # Q_optim = qRW_me_optim(P_vals, xp, surv_p, tau_sqd, phi, gamma) # 0.99205 secs
 # time.time() - start_time
 
+# Q_cplus = np.empty(len(P_vals))
+# n_x=400; cdf_vals = np.repeat(np.nan, n_x);x_vals = np.repeat(np.nan, n_x)
+# start_time = time.time()
+# tmp_int = lib.qRW_me_interp(P_vals, xp, surv_p, tau_sqd, phi, gamma,
+#                            len(P_vals), len(xp), Q_cplus,
+#                            cdf_vals, x_vals, n_x, 5, 20)
+# time.time() - start_time  #0.00742 secs
+
 # fig, ax = plt.subplots()
 # ax.plot(Q_interp_py, P_vals, 'b', label="Ben's interp method")
 # ax.plot(Q_interp, P_vals, 'b', label="Ben's interp method in C++")
 # ax.plot(Q_optim, P_vals, 'r',linestyle='--', label="Scipy's optim")
+# ax.plot(Q_cplus, P_vals, 'c',linestyle='-.', label="Ben's interp method & pchip in C++")
 # legend = ax.legend(loc = "lower right",shadow=True)
 # plt.show()  
 ## -------------------------------------------------------------------------- ##
